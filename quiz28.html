@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulazione Concorso Operatore Socio Sanitario - Modulo 4</title>
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #1a1a2e, #16213e, #0f3460);
+            margin: 0;
+            padding: 20px;
+            color: #f0f0f0;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 2.5em;
+            color: #ffd700;
+            text-shadow: 0 0 10px #ffd700, 0 0 20px #ffd700;
+            animation: glow 2s infinite alternate;
+        }
+
+        @keyframes glow {
+            from { text-shadow: 0 0 10px #ffd700, 0 0 20px #ffd700; }
+            to { text-shadow: 0 0 20px #ffd700, 0 0 30px #ffd700; }
+        }
+
+        #timer {
+            text-align: center;
+            margin: 20px 0;
+            font-size: 1.5em;
+            color: #00eaff;
+            text-shadow: 0 0 5px #00eaff;
+        }
+
+        .question-nav {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin: 20px 0;
+        }
+
+        .question-box {
+            width: 40px;
+            height: 40px;
+            margin: 8px;
+            background: linear-gradient(45deg, #333, #555);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+            color: #fff;
+            font-weight: bold;
+        }
+
+        .question-box:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 15px #ffd700;
+        }
+
+        .question-box.answered {
+            background: linear-gradient(45deg, #ffd700, #ffaa00);
+            box-shadow: 0 0 15px #ffd700;
+        }
+
+        .question {
+            margin-bottom: 20px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .question.active {
+            display: block;
+        }
+
+        .question h3 {
+            margin: 0 0 15px 0;
+            color: #ffffff;
+            font-size: 1.6em;
+            text-shadow: 0 0 3px rgba(255, 255, 255, 0.5);
+            line-height: 1.4;
+        }
+
+        .option {
+            margin: 10px 0;
+            padding: 12px;
+            display: flex;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.25);
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            color: #ffffff;
+            font-size: 1.2em;
+            font-weight: 500;
+        }
+
+        .option:hover {
+            background: rgba(255, 255, 255, 0.35);
+            transform: translateX(5px);
+        }
+
+        .option.correct {
+            background: linear-gradient(90deg, #00eaff, #00b8d4);
+            color: #fff;
+            box-shadow: 0 0 15px #00eaff;
+        }
+
+        .option.wrong {
+            background: linear-gradient(90deg, #ff5252, #d81b60);
+            color: #fff;
+            box-shadow: 0 0 15px #ff5252;
+        }
+
+        .lamp {
+            display: none;
+            margin-left: 15px;
+            cursor: pointer;
+            font-size: 1.5em;
+            color: #ffd700;
+            text-shadow: 0 0 10px #ffd700;
+            transition: transform 0.3s ease;
+        }
+
+        .lamp:hover {
+            transform: scale(1.2);
+        }
+
+        .explanation {
+            margin-top: 15px;
+            font-style: italic;
+            color: #f0f0f0;
+            background: rgba(0, 0, 0, 0.5);
+            padding: 10px;
+            border-radius: 5px;
+            display: none;
+            animation: slideIn 0.5s ease;
+            font-size: 1.1em;
+            line-height: 1.5;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(-20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        .navigation {
+            display: flex;
+            justify-content: space-between;
+            margin: 20px 0;
+        }
+
+        .nav-button {
+            padding: 12px 25px;
+            background: linear-gradient(45deg, #ffd700, #ffaa00);
+            color: #1a1a2e;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1.2em;
+            box-shadow: 0 0 10px #ffd700;
+            transition: all 0.3s ease;
+            font-weight: bold;
+        }
+
+        .nav-button:disabled {
+            background: #666;
+            color: #ccc;
+            box-shadow: none;
+            cursor: not-allowed;
+        }
+
+        .nav-button:hover:not(:disabled) {
+            transform: scale(1.05);
+            box-shadow: 0 0 20px #ffd700;
+        }
+
+        button#submit {
+            display: block;
+            width: 250px;
+            margin: 20px auto;
+            padding: 15px;
+            background: linear-gradient(45deg, #00eaff, #00b8d4);
+            color: #1a1a2e;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1.3em;
+            box-shadow: 0 0 15px #00eaff;
+            transition: all 0.3s ease;
+            font-weight: bold;
+        }
+
+        button#submit:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 25px #00eaff;
+        }
+
+        #result {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 1.8em;
+            color: #ffd700;
+            text-shadow: 0 0 10px #ffd700;
+        }
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <h1>Simulazione Concorso Operatore Socio Sanitario - Modulo 4</h1>
+        <div class="question-nav" id="questionNav"></div>
+        <div id="timer">Tempo rimanente: <span id="time">30:00</span></div>
+        <div id="quiz"></div>
+        <div class="navigation">
+            <button class="nav-button" id="prev" disabled>⬅ Indietro</button>
+            <button class="nav-button" id="next">Avanti ➡</button>
+        </div>
+        <button id="submit">Invia Risposte</button>
+        <div id="result"></div>
+    </div>
+
+    <script>
+        // Array di domande (91-120) con opzioni mescolate casualmente
+        const questions = [
+            {
+                question: "Quale funzione hanno gli ormoni tiroidei?",
+                options: ["Regolano la pressione arteriosa", "Regolano il metabolismo corporeo", "Stimolano la risposta allo stress"],
+                correct: "Regolano il metabolismo corporeo",
+                explanation: "Gli ormoni tiroidei, triiodotironina (T3) e tiroxina (T4), prodotti dalla tiroide, regolano il metabolismo corporeo influenzando il consumo di energia, la produzione di calore e la crescita cellulare. Non regolano direttamente la pressione arteriosa né la risposta allo stress, che sono funzioni di altri ormoni come l’aldosterone o l’adrenalina. Gli OSS devono monitorare i pazienti con disfunzioni tiroidee, osservando sintomi come stanchezza, aumento di peso o tachicardia, e segnalarli all’infermiere."
+            },
+            {
+                question: "Cos’è l’ipertiroidismo?",
+                options: ["Una riduzione della funzione tiroidea", "Un aumento della funzione tiroidea", "Un’infiammazione della tiroide"],
+                correct: "Un aumento della funzione tiroidea",
+                explanation: "L’ipertiroidismo è una condizione caratterizzata da un’eccessiva produzione di ormoni tiroidei, che accelera il metabolismo causando sintomi come perdita di peso, tachicardia, nervosismo e intolleranza al caldo. Non è una riduzione della funzione (ipotiroidismo) né un’infiammazione (tiroidite). Gli OSS devono riconoscere questi segni per supportare i pazienti, garantendo un ambiente confortevole e segnalando anomalie."
+            },
+            {
+                question: "Cos’è l’ipotiroidismo?",
+                options: ["Un aumento della funzione tiroidea", "Una riduzione della funzione tiroidea", "Un tumore della tiroide"],
+                correct: "Una riduzione della funzione tiroidea",
+                explanation: "L’ipotiroidismo è una condizione in cui la tiroide produce quantità insufficienti di ormoni tiroidei, rallentando il metabolismo e causando sintomi come stanchezza, aumento di peso, intolleranza al freddo e pelle secca. Non è un aumento della funzione né un tumore. Gli OSS devono osservare questi sintomi nei pazienti, specialmente anziani, e collaborare con l’équipe medica per la gestione terapeutica."
+            },
+            {
+                question: "Quale segno è tipico dell’ipertiroidismo?",
+                options: ["Bradicardia", "Perdita di peso", "Ipotensione"],
+                correct: "Perdita di peso",
+                explanation: "La perdita di peso è un segno tipico dell’ipertiroidismo, dovuta all’accelerazione del metabolismo causata da un eccesso di ormoni tiroidei. La bradicardia e l’ipotensione sono più associate all’ipotiroidismo. Gli OSS devono monitorare il peso corporeo dei pazienti e segnalare variazioni significative, supportando un’adeguata alimentazione."
+            },
+            {
+                question: "Quale segno è tipico dell’ipotiroidismo?",
+                options: ["Tachicardia", "Aumento di peso", "Ipertermia"],
+                correct: "Aumento di peso",
+                explanation: "L’aumento di peso è un segno caratteristico dell’ipotiroidismo, causato dal rallentamento del metabolismo dovuto a una carenza di ormoni tiroidei. La tachicardia e l’ipertermia sono più comuni nell’ipertiroidismo. Gli OSS devono osservare questi cambiamenti e supportare i pazienti con una dieta bilanciata, segnalando sintomi all’infermiere."
+            },
+            {
+                question: "Cos’è l’iperglicemia?",
+                options: ["Un aumento dei livelli di glucosio nel sangue", "Una riduzione dei livelli di glucosio nel sangue", "Un’infiammazione del pancreas"],
+                correct: "Un aumento dei livelli di glucosio nel sangue",
+                explanation: "L’iperglicemia è una condizione in cui i livelli di glucosio nel sangue sono elevati, spesso associata al diabete mellito o a stress metabolico. Non è una riduzione del glucosio (ipoglicemia) né un’infiammazione pancreatica. Gli OSS devono monitorare la glicemia con dispositivi come il glucometro e segnalare valori anomali, garantendo idratazione e sicurezza del paziente."
+            },
+            {
+                question: "Cos’è l’ipoglicemia?",
+                options: ["Un aumento dei livelli di glucosio nel sangue", "Una riduzione dei livelli di glucosio nel sangue", "Un tumore del pancreas"],
+                correct: "Una riduzione dei livelli di glucosio nel sangue",
+                explanation: "L’ipoglicemia è una condizione in cui i livelli di glucosio nel sangue scendono sotto i valori normali (generalmente <70 mg/dL), causando sintomi come tremori, sudorazione e confusione. Non è un aumento del glucosio né un tumore. Gli OSS devono riconoscere i segni di ipoglicemia e intervenire rapidamente, somministrando zuccheri semplici (es. succo di frutta) sotto supervisione medica."
+            },
+            {
+                question: "Quale segno è tipico dell’iperglicemia?",
+                options: ["Sudorazione", "Poliuria", "Tremori"],
+                correct: "Poliuria",
+                explanation: "La poliuria, ovvero un aumento della produzione di urina, è un segno tipico dell’iperglicemia, poiché l’eccesso di glucosio nel sangue viene escreto dai reni, causando disidratazione. Sudorazione e tremori sono più associati all’ipoglicemia. Gli OSS devono monitorare il volume urinario e garantire un’adeguata idratazione nei pazienti diabetici."
+            },
+            {
+                question: "Quale segno è tipico dell’ipoglicemia?",
+                options: ["Polidipsia", "Tremori", "Perdita di peso"],
+                correct: "Tremori",
+                explanation: "I tremori sono un segno caratteristico dell’ipoglicemia, causati dalla carenza di glucosio nel cervello e nei muscoli, che porta a una risposta adrenergica. La polidipsia e la perdita di peso sono più comuni nell’iperglicemia. Gli OSS devono agire rapidamente in caso di tremori, somministrando zuccheri sotto supervisione e segnalando l’episodio."
+            },
+            {
+                question: "Cos’è l’ipercalcemia?",
+                options: ["Una riduzione dei livelli di calcio nel sangue", "Un aumento dei livelli di calcio nel sangue", "Un’infiammazione delle paratiroidi"],
+                correct: "Un aumento dei livelli di calcio nel sangue",
+                explanation: "L’ipercalcemia è una condizione in cui i livelli di calcio nel sangue sono elevati, spesso dovuta a iperparatiroidismo, tumori o eccesso di vitamina D. Causa sintomi come stanchezza, nausea e aritmie. Non è una riduzione del calcio né un’infiammazione. Gli OSS devono monitorare i pazienti per sintomi neurologici o cardiaci e segnalarli."
+            },
+            {
+                question: "Cos’è l’ipocalcemia?",
+                options: ["Un aumento dei livelli di calcio nel sangue", "Una riduzione dei livelli di calcio nel sangue", "Un tumore delle paratiroidi"],
+                correct: "Una riduzione dei livelli di calcio nel sangue",
+                explanation: "L’ipocalcemia è una condizione in cui i livelli di calcio nel sangue sono bassi, spesso dovuta a ipoparatiroidismo, carenza di vitamina D o insufficienza renale. Causa sintomi come crampi, tetania e parestesie. Gli OSS devono riconoscere questi segni e collaborare con l’équipe per la somministrazione di calcio, se prescritto."
+            },
+            {
+                question: "Quale segno è tipico dell’ipercalcemia?",
+                options: ["Crampi muscolari", "Nausea", "Tremori"],
+                correct: "Nausea",
+                explanation: "La nausea è un segno tipico dell’ipercalcemia, dovuta all’effetto tossico dell’eccesso di calcio su sistema nervoso e apparato digerente. Crampi e tremori sono più associati all’ipocalcemia. Gli OSS devono monitorare i pazienti per sintomi gastrointestinali e garantire comfort, segnalando anomalie."
+            },
+            {
+                question: "Quale segno è tipico dell’ipocalcemia?",
+                options: ["Polidipsia", "Crampi muscolari", "Perdita di peso"],
+                correct: "Crampi muscolari",
+                explanation: "I crampi muscolari sono un segno caratteristico dell’ipocalcemia, causati dalla maggiore eccitabilità neuromuscolare dovuta alla carenza di calcio. La polidipsia e la perdita di peso non sono correlate. Gli OSS devono osservare questi sintomi e supportare i pazienti, evitando movimenti bruschi che possano peggiorare i crampi."
+            },
+            {
+                question: "Cos’è l’iperparatiroidismo?",
+                options: ["Una riduzione della funzione paratiroidea", "Un aumento della funzione paratiroidea", "Un’infiammazione delle paratiroidi"],
+                correct: "Un aumento della funzione paratiroidea",
+                explanation: "L’iperparatiroidismo è una condizione in cui le paratiroidi producono eccessivo paratormone (PTH), causando ipercalcemia, fragilità ossea e calcoli renali. Non è una riduzione della funzione né un’infiammazione. Gli OSS devono monitorare sintomi come stanchezza o dolori ossei e segnalarli, supportando i pazienti nella gestione quotidiana."
+            },
+            {
+                question: "Cos’è l’ipoparatiroidismo?",
+                options: ["Un aumento della funzione paratiroidea", "Una riduzione della funzione paratiroidea", "Un tumore delle paratiroidi"],
+                correct: "Una riduzione della funzione paratiroidea",
+                explanation: "L’ipoparatiroidismo è una condizione in cui le paratiroidi producono quantità insufficienti di paratormone, causando ipocalcemia e sintomi come tetania e crampi. Non è un aumento della funzione né un tumore. Gli OSS devono osservare questi segni e collaborare con l’équipe per la somministrazione di calcio o vitamina D."
+            },
+            {
+                question: "Quale segno è tipico dell’iperparatiroidismo?",
+                options: ["Crampi muscolari", "Calcoli renali", "Tremori"],
+                correct: "Calcoli renali",
+                explanation: "I calcoli renali sono un segno tipico dell’iperparatiroidismo, dovuti all’eccesso di calcio nel sangue che si deposita nei reni. Crampi e tremori sono più associati all’ipoparatiroidismo. Gli OSS devono monitorare il dolore renale e garantire un’adeguata idratazione per prevenire complicanze."
+            },
+            {
+                question: "Quale segno è tipico dell’ipoparatiroidismo?",
+                options: ["Tetania", "Polidipsia", "Perdita di peso"],
+                correct: "Tetania",
+                explanation: "La tetania, ovvero contrazioni muscolari involontarie, è un segno caratteristico dell’ipoparatiroidismo, causata dall’ipocalcemia che aumenta l’eccitabilità neuromuscolare. Polidipsia e perdita di peso non sono correlate. Gli OSS devono agire con cautela per evitare di scatenare crisi tetaniche e segnalare i sintomi."
+            },
+            {
+                question: "Cos’è la sindrome di Cushing?",
+                options: ["Un aumento della funzione surrenalica", "Una riduzione della funzione surrenalica", "Un’infiammazione delle surrenali"],
+                correct: "Un aumento della funzione surrenalica",
+                explanation: "La sindrome di Cushing è causata da un’eccessiva produzione di cortisolo da parte delle ghiandole surrenali, spesso dovuta a un adenoma ipofisario o surrenalico. Provoca sintomi come obesità centrale, ipertensione e strie cutanee. Non è una riduzione della funzione né un’infiammazione. Gli OSS devono monitorare i segni fisici e supportare i pazienti nella gestione delle complicanze."
+            },
+            {
+                question: "Cos’è il morbo di Addison?",
+                options: ["Un aumento della funzione surrenalica", "Una riduzione della funzione surrenalica", "Un tumore delle surrenali"],
+                correct: "Una riduzione della funzione surrenalica",
+                explanation: "Il morbo di Addison è una condizione di insufficienza surrenalica, caratterizzata da una produzione insufficiente di cortisolo e aldosterone, che causa stanchezza, ipotensione e iperpigmentazione cutanea. Non è un aumento della funzione né un tumore. Gli OSS devono osservare questi sintomi e garantire la somministrazione regolare di terapie ormonali sostitutive."
+            },
+            {
+                question: "Quale segno è tipico della sindrome di Cushing?",
+                options: ["Ipotensione", "Obesità centrale", "Iperpigmentazione cutanea"],
+                correct: "Obesità centrale",
+                explanation: "L’obesità centrale, con accumulo di grasso a livello addominale e facciale, è un segno tipico della sindrome di Cushing, dovuta all’eccesso di cortisolo. L’ipotensione e l’iperpigmentazione sono più associate al morbo di Addison. Gli OSS devono monitorare i cambiamenti fisici e supportare i pazienti con una dieta appropriata."
+            },
+            {
+                question: "Quale segno è tipico del morbo di Addison?",
+                options: ["Iperpigmentazione cutanea", "Obesità centrale", "Calcoli renali"],
+                correct: "Iperpigmentazione cutanea",
+                explanation: "L’iperpigmentazione cutanea, specialmente in aree esposte o pieghe, è un segno caratteristico del morbo di Addison, dovuta all’aumento di ACTH che stimola i melanociti. Obesità centrale e calcoli renali non sono correlati. Gli OSS devono osservare questi cambiamenti e segnalarli, garantendo il comfort del paziente."
+            },
+            {
+                question: "Cos’è l’acromegalia?",
+                options: ["Un aumento della funzione ipofisaria", "Una riduzione della funzione ipofisaria", "Un’infiammazione dell’ipofisi"],
+                correct: "Un aumento della funzione ipofisaria",
+                explanation: "L’acromegalia è una condizione causata da un’eccessiva produzione di ormone della crescita (GH) da parte dell’ipofisi, spesso dovuta a un adenoma, che porta a ingrossamento delle estremità, viso e organi. Non è una riduzione della funzione né un’infiammazione. Gli OSS devono monitorare i cambiamenti fisici e supportare i pazienti nella gestione dei sintomi."
+            },
+            {
+                question: "Quale segno è tipico dell’acromegalia?",
+                options: ["Ingrandimento delle mani e dei piedi", "Ipotensione", "Crampi muscolari"],
+                correct: "Ingrandimento delle mani e dei piedi",
+                explanation: "L’ingrandimento delle mani e dei piedi è un segno caratteristico dell’acromegalia, dovuto all’eccesso di ormone della crescita che causa crescita anomala dei tessuti molli e ossei. Ipotensione e crampi non sono correlati. Gli OSS devono osservare questi segni e collaborare con l’équipe per la gestione della malattia."
+            },
+            {
+                question: "Cos’è il diabete insipido?",
+                options: ["Un’alterazione del metabolismo degli zuccheri", "Una carenza di ormone antidiuretico", "Un’infiammazione del pancreas"],
+                correct: "Una carenza di ormone antidiuretico",
+                explanation: "Il diabete insipido è una condizione causata da una carenza di ormone antidiuretico (ADH) o da una risposta renale inadeguata, che porta a poliuria e sete intensa. Non è legato agli zuccheri né al pancreas. Gli OSS devono monitorare il volume urinario e garantire idratazione, segnalando sintomi di disidratazione."
+            },
+            {
+                question: "Quale segno è tipico del diabete insipido?",
+                options: ["Polidipsia", "Obesità centrale", "Iperpigmentazione cutanea"],
+                correct: "Polidipsia",
+                explanation: "La polidipsia, ovvero sete intensa, è un segno tipico del diabete insipido, dovuta alla perdita di acqua causata dalla poliuria. Obesità e iperpigmentazione non sono correlate. Gli OSS devono garantire un’adeguata idratazione e monitorare i segni di disidratazione nei pazienti."
+            },
+            {
+                question: "Cos’è l’ipofisi?",
+                options: ["Una ghiandola che regola il metabolismo degli zuccheri", "Una ghiandola che controlla altre ghiandole endocrine", "Una ghiandola che produce enzimi digestivi"],
+                correct: "Una ghiandola che controlla altre ghiandole endocrine",
+                explanation: "L’ipofisi, o ghiandola pituitaria, è una ghiandola endocrina situata alla base del cranio che controlla altre ghiandole (es. tiroide, surrenali, gonadi) attraverso ormoni come ACTH, TSH e FSH. Non regola direttamente gli zuccheri né produce enzimi digestivi. Gli OSS devono conoscere il suo ruolo per comprendere le disfunzioni endocrine nei pazienti."
+            },
+            {
+                question: "Dove si trova l’ipofisi?",
+                options: ["Nel pancreas", "Alla base del cranio", "Sopra i reni"],
+                correct: "Alla base del cranio",
+                explanation: "L’ipofisi si trova alla base del cranio, nella sella turcica dell’osso sfenoide, protetta dalla scatola cranica. Non è nel pancreas né sopra i reni. Gli OSS devono sapere la sua posizione per comprendere le implicazioni di patologie ipofisarie, come adenomi."
+            },
+            {
+                question: "Quale funzione ha l’ormone della crescita?",
+                options: ["Regola il metabolismo del calcio", "Stimola la crescita e il metabolismo cellulare", "Regola l’equilibrio idro-salino"],
+                correct: "Stimola la crescita e il metabolismo cellulare",
+                explanation: "L’ormone della crescita (GH), prodotto dall’ipofisi, stimola la crescita ossea e muscolare nei bambini e regola il metabolismo cellulare negli adulti, promuovendo la sintesi proteica. Non regola calcio né equilibrio idro-salino. Gli OSS devono monitorare i pazienti con squilibri di GH, come nell’acromegalia, osservando cambiamenti fisici."
+            },
+            {
+                question: "Cos’è l’ACTH?",
+                options: ["Un enzima digestivo", "Un ormone", "Un anticorpo"],
+                correct: "Un ormone",
+                explanation: "L’ACTH (ormone adrenocorticotropo) è un ormone prodotto dall’ipofisi anteriore che stimola le ghiandole surrenali a produrre cortisolo e altri ormoni. Non è un enzima né un anticorpo. Gli OSS devono conoscere il suo ruolo per comprendere condizioni come la sindrome di Cushing o il morbo di Addison."
+            }
+        ];
+
+        let currentQuestion = 0;
+
+        // Carica i quadratini di navigazione
+        function loadQuestionNav() {
+            const navDiv = document.getElementById("questionNav");
+            questions.forEach((_, index) => {
+                const box = document.createElement("div");
+                box.classList.add("question-box");
+                box.textContent = index + 1;
+                box.addEventListener("click", () => {
+                    showQuestion(index);
+                });
+                navDiv.appendChild(box);
+            });
+        }
+
+        // Carica il quiz
+        function loadQuiz() {
+            const quizDiv = document.getElementById("quiz");
+            questions.forEach((q, index) => {
+                const questionDiv = document.createElement("div");
+                questionDiv.classList.add("question");
+                questionDiv.id = `question-${index}`;
+                questionDiv.innerHTML = `
+                    <h3>${index + 1}. ${q.question}</h3>
+                    ${q.options.map((opt, i) => `
+                        <div class="option" data-value="${opt}">
+                            <input type="radio" name="q${index}" value="${opt}" id="q${index}_${i}">
+                            <label for="q${index}_${i}">${opt}</label>
+                            <span class="lamp" id="lamp-${index}-${i}">💡</span>
+                        </div>
+                    `).join("")}
+                    <div class="explanation" id="exp-${index}">${q.explanation}</div>
+                `;
+                quizDiv.appendChild(questionDiv);
+
+                // Aggiungi evento per accendere il quadratino
+                const radios = questionDiv.querySelectorAll(`input[name="q${index}"]`);
+                radios.forEach(radio => {
+                    radio.addEventListener("change", () => {
+                        document.querySelectorAll(".question-box")[index].classList.add("answered");
+                    });
+                });
+            });
+            showQuestion(0); // Mostra la prima domanda
+        }
+
+        // Mostra la domanda corrente
+        function showQuestion(index) {
+            document.querySelectorAll(".question").forEach(q => q.classList.remove("active"));
+            document.getElementById(`question-${index}`).classList.add("active");
+            currentQuestion = index;
+
+            // Gestione stato pulsanti
+            document.getElementById("prev").disabled = currentQuestion === 0;
+            document.getElementById("next").disabled = currentQuestion === questions.length - 1;
+        }
+
+        // Timer (30 minuti)
+        let timeLeft = 30 * 60;
+        function startTimer() {
+            const timer = setInterval(() => {
+                timeLeft--;
+                const minutes = Math.floor(timeLeft / 60);
+                const seconds = timeLeft % 60;
+                document.getElementById("time").textContent = 
+                    `${minutes}:${seconds < 10 ? "0" + seconds : seconds}`;
+                
+                if (timeLeft <= 0) {
+                    clearInterval(timer);
+                    checkAnswers();
+                }
+            }, 1000);
+        }
+
+        // Controllo risposte e feedback visivo
+        function checkAnswers() {
+            let score = 0;
+            questions.forEach((q, index) => {
+                const selected = document.querySelector(`input[name="q${index}"]:checked`);
+                const options = document.querySelectorAll(`#question-${index} .option`);
+
+                options.forEach(option => {
+                    const value = option.getAttribute("data-value");
+                    if (value === q.correct) {
+                        option.classList.add("correct");
+                        const lamp = option.querySelector(".lamp");
+                        lamp.style.display = "inline";
+                        lamp.addEventListener("click", () => {
+                            const explanation = document.getElementById(`exp-${index}`);
+                            explanation.style.display = "block";
+                        });
+                    }
+                });
+
+                if (selected) {
+                    if (selected.value === q.correct) {
+                        score++;
+                    } else {
+                        selected.parentElement.classList.add("wrong");
+                    }
+                }
+            });
+
+            const resultDiv = document.getElementById("result");
+            resultDiv.textContent = `Punteggio: ${score} / ${questions.length}`;
+            document.getElementById("submit").disabled = true;
+            document.getElementById("prev").disabled = true;
+            document.getElementById("next").disabled = true;
+
+            // Disabilita i radio button dopo l'invio
+            document.querySelectorAll("input[type=radio]").forEach(radio => {
+                radio.disabled = true;
+            });
+        }
+
+        // Inizializzazione
+        window.onload = () => {
+            loadQuestionNav();
+            loadQuiz();
+            startTimer();
+
+            document.getElementById("prev").addEventListener("click", () => {
+                if (currentQuestion > 0) showQuestion(currentQuestion - 1);
+            });
+
+            document.getElementById("next").addEventListener("click", () => {
+                if (currentQuestion < questions.length - 1) showQuestion(currentQuestion + 1);
+            });
+
+            document.getElementById("submit").addEventListener("click", checkAnswers);
+        };
+    </script>
+</body>
+</html>
